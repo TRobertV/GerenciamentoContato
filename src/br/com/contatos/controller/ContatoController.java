@@ -46,6 +46,8 @@ public class ContatoController implements Initializable {
 	}
 
 	private void preencherLista(){
+
+		//função para preencher lista
 		lstcontatos.getItems().clear();
 		Connection con = MySqlConnect.ConectarDb();
 		String sql="Select * from contact";
