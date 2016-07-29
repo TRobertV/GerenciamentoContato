@@ -7,7 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import javax.jws.Oneway;
+
+import br.com.contatos.helper.Alerta;
 import br.com.contatos.helper.MySqlConnect;
+import br.com.contatos.model.Pessoa;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -19,30 +23,21 @@ public class ContatoController implements Initializable {
 	@FXML TextField txtnome;
 	@FXML TextField txttelefone;
 	@FXML Button btninserir;
-	@FXML ListView lstcontatos;
+	@FXML Button btndeletar;
+	@FXML Button btnatualizar;
+	@FXML ListView<Pessoa> lstcontatos;
 
 
 	@FXML public void inserirContato() {
-		Connection con = MySqlConnect.ConectarDb(); //Chama a conexão
-		String sql ="insert into contact(name, phone) values(? , ?)"; //String para a inserção no mysql
-		PreparedStatement parametros; //Classe de parametros
-		try {
-			parametros = con.prepareStatement(sql);	//Chama a conexão com os parametros passando a string
-			parametros.setString(1,txtnome.getText());
-			parametros.setString(2, txttelefone.getText());
-			parametros.executeUpdate(); //Executa o comando sql
-			con.close();//Fecha a conexão
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Pessoa pessoa = new Pessoa();
+		pessoa.setNome(txtnome.getText());
+		pessoa.setTel(txttelefone.getText());
+
+		boolean sucesso = Pessoa.inserir(pessoa);
 
 		preencherLista();
+		Alerta.showInformation("Mensagem", "Inserido com sucesso");
 
-		txtnome.clear();
-		txttelefone.clear();
-
-		System.out.println("Não funciona essa joça");
 	}
 
 	private void preencherLista(){
@@ -54,12 +49,13 @@ public class ContatoController implements Initializable {
 		try {
 			ResultSet rs = con.createStatement().executeQuery(sql);
 			while(rs.next()){
-				String contato = "";
-				contato = rs.getString("name");
-				contato +=" - ";
-				contato += rs.getString("phone");
+				Pessoa p = new Pessoa();
+				p.setNome(rs.getString("name"));
+				p.setTel(rs.getString("phone"));
+				p.setId(rs.getInt("id"));
 
-				lstcontatos.getItems().add(contato);
+
+				lstcontatos.getItems().add(p);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -72,4 +68,44 @@ public class ContatoController implements Initializable {
 		// TODO Auto-generated method stub
 		preencherLista();
 	}
+
+	public void deletarContato(){
+		Pessoa p = new Pessoa();
+		Connection con = MySqlConnect.ConectarDb();
+		String sql= "delete from contact where id=? ;";
+		p =(Pessoa)lstcontatos.getSelectionModel().getSelectedItem();
+		PreparedStatement parametros;
+			try {
+				parametros = con.prepareStatement(sql);
+				parametros.setLong(1, p.getId());
+
+				parametros.executeUpdate(); //Executa o comando sql
+				con.close();//Fecha a conexão
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+			preencherLista();
+
+	}
+	public void editarContato(){
+		Pessoa p = new Pessoa();
+
+		Connection con = MySqlConnect.ConectarDb();
+		p=lstcontatos.getSelectionModel().getSelectedItem();
+		String sql = "update contact set name=?, phone=? where id=?;";
+		PreparedStatement parametros;
+		p.setNome(txtnome.getText());
+		p.setTel(txttelefone.getText());
+		p.setId(p.getId());
+
+		boolean sucesso = Pessoa.atualizar(p);
+
+		txtnome.clear();
+		txttelefone.clear();
+
+		preencherLista();
+
+	}
+
 }

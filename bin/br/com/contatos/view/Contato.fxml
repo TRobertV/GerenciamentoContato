@@ -17,7 +17,9 @@
       <TextField fx:id="txttelefone" layoutX="128.0" layoutY="124.0" promptText="Telefone" />
       <Label layoutX="55.0" layoutY="85.0" text="Nome" />
       <Label layoutX="55.0" layoutY="128.0" text="Telefone" />
-      <Button fx:id="btninserir" layoutX="124.0" layoutY="188.0" mnemonicParsing="false" onAction="#inserirContato" text="Inserir" />
+      <Button fx:id="btninserir" layoutX="47.0" layoutY="188.0" mnemonicParsing="false" onAction="#inserirContato" text="Inserir" />
       <ListView fx:id="lstcontatos" layoutX="50.0" layoutY="223.0" prefHeight="200.0" prefWidth="200.0" />
+      <Button fx:id="btndeletar" layoutX="204.0" layoutY="188.0" mnemonicParsing="false" onAction="#deletarContato" prefHeight="25.0" prefWidth="55.0" text="Deletar" />
+      <Button fx:id="btnatualizar" layoutX="119.0" layoutY="188.0" mnemonicParsing="false" onAction="#editarContato" text="Atualizar" />
    </children>
 </AnchorPane>
